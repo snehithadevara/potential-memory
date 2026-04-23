@@ -4,66 +4,177 @@
   <meta charset="UTF-8">
   <title>Simple Weather App</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #4facfe, #00f2fe);
-      color: #fff;
-      text-align: center;
-      padding: 50px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 50%, #ffd93d 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
     .app {
-      background: rgba(0,0,0,0.3);
-      padding: 20px;
-      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 200, 100, 0.95) 0%, rgba(255, 180, 80, 0.95) 100%);
+      padding: 30px;
+      border-radius: 40px;
       display: inline-block;
-      min-width: 300px;
+      min-width: 320px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      color: #fff;
+      text-align: center;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 10px;
+    }
+
+    .header-title {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.9;
     }
 
     input {
-      padding: 10px;
-      width: 70%;
+      padding: 12px 15px;
+      width: 100%;
       border: none;
-      border-radius: 5px;
-      margin-bottom: 10px;
+      border-radius: 25px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.3);
+      color: #fff;
+      text-align: center;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
     }
 
     button {
-      padding: 10px 15px;
+      padding: 12px 30px;
       border: none;
-      background: #fff;
-      color: #333;
-      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.4);
+      color: #fff;
+      border-radius: 25px;
       cursor: pointer;
+      font-weight: 600;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      font-size: 14px;
     }
 
     button:hover {
-      background: #ddd;
+      background: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px);
     }
 
     .weather {
       margin-top: 20px;
     }
 
-    .temp {
-      font-size: 40px;
+    .temp-section {
+      font-size: 72px;
       font-weight: bold;
+      margin: 20px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .city-info {
+      font-size: 18px;
+      margin-bottom: 15px;
+      opacity: 0.95;
+    }
+
+    .description {
+      font-size: 16px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .weather-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .detail-item {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 13px;
+    }
+
+    .detail-label {
+      opacity: 0.8;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .detail-value {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .weather-icon {
+      font-size: 48px;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
 
   <div class="app">
-    <h2>🌤 Weather App</h2>
+    <div class="header">
+      <div class="header-title">☀️ 天气</div>
+      <div class="header-title">刷新 ↻</div>
+    </div>
+    
     <input type="text" id="city" placeholder="Enter city name">
-    <br>
     <button onclick="getWeather()">Get Weather</button>
 
-    <div class="weather" id="weather"></div>
+    <div class="weather" id="weather">
+      <div style="opacity: 0.8;">Enter a city name and click Get Weather</div>
+    </div>
   </div>
 
   <script>
-    const apiKey = "YOUR_API_KEY_HERE"; // Replace with your OpenWeatherMap API key
+    function getWeatherEmoji(main) {
+      switch(main.toLowerCase()) {
+        case 'sunny':
+        case 'clear':
+          return '☀️';
+        case 'clouds':
+        case 'cloudy':
+          return '☁️';
+        case 'rain':
+        case 'rainy':
+          return '🌧️';
+        case 'drizzle':
+          return '🌦️';
+        case 'thunderstorm':
+          return '⛈️';
+        case 'snow':
+          return '❄️';
+        default:
+          return '🌤️';
+      }
+    }
 
     async function getWeather() {
       const city = document.getElementById("city").value;
@@ -74,26 +185,86 @@
         return;
       }
 
-      weatherDiv.innerHTML = "Loading...";
+      weatherDiv.innerHTML = "<div style='opacity: 0.8;'>Loading...</div>";
 
       try {
-        const res = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
-        );
+        // Use Open-Meteo free API (no authentication needed)
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
+        
+        const geoRes = await fetch(geoUrl);
+        const geoData = await geoRes.json();
 
-        if (!res.ok) throw new Error("City not found");
+        if (!geoData.results || geoData.results.length === 0) {
+          throw new Error("City not found");
+        }
 
-        const data = await res.json();
+        const location = geoData.results[0];
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,pressure_msl,apparent_temperature&temperature_unit=celsius&wind_speed_unit=ms&timezone=auto`;
+
+        const weatherRes = await fetch(weatherUrl);
+        const weatherData = await weatherRes.json();
+        const current = weatherData.current;
+
+        const weatherDescriptions = {
+          0: "Clear sky",
+          1: "Mainly clear",
+          2: "Partly cloudy",
+          3: "Overcast",
+          45: "Foggy",
+          48: "Foggy",
+          51: "Drizzle",
+          53: "Drizzle",
+          55: "Drizzle",
+          61: "Rain",
+          63: "Rain",
+          65: "Rain",
+          71: "Snow",
+          73: "Snow",
+          75: "Snow",
+          77: "Snow",
+          80: "Rain",
+          81: "Rain",
+          82: "Rain",
+          85: "Snow",
+          86: "Snow",
+          95: "Thunderstorm",
+          96: "Thunderstorm",
+          99: "Thunderstorm"
+        };
+
+        const description = weatherDescriptions[current.weather_code] || "Unknown";
+        const emoji = getWeatherEmoji(description);
+        const feelsLike = Math.round(current.apparent_temperature);
+        const country = location.country || "";
 
         weatherDiv.innerHTML = `
-          <h3>${data.name}, ${data.sys.country}</h3>
-          <div class="temp">${data.main.temp}°C</div>
-          <p>${data.weather[0].description}</p>
-          <p>Humidity: ${data.main.humidity}%</p>
-          <p>Wind Speed: ${data.wind.speed} m/s</p>
+          <div class="city-info">${location.name}, ${country}</div>
+          <div class="weather-icon">${emoji}</div>
+          <div class="temp-section">${Math.round(current.temperature_2m)}°</div>
+          <div class="description">${description}</div>
+          
+          <div class="weather-details">
+            <div class="detail-item">
+              <div class="detail-label">体感温度</div>
+              <div class="detail-value">${feelsLike}°</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">湿度</div>
+              <div class="detail-value">${current.relative_humidity_2m}%</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">气压</div>
+              <div class="detail-value">${Math.round(current.pressure_msl)} mb</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">风速</div>
+              <div class="detail-value">${current.wind_speed_10m.toFixed(1)} m/s</div>
+            </div>
+          </div>
         `;
       } catch (error) {
-        weatherDiv.innerHTML = "Error fetching weather data.";
+        console.error("Weather fetch error:", error);
+        weatherDiv.innerHTML = `<div style='color: rgba(255,255,255,0.8);'>❌ ${error.message}<br><small>Try another city name</small></div>`;
       }
     }
   </script>
