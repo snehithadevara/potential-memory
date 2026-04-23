@@ -141,8 +141,8 @@
 
   <div class="app">
     <div class="header">
-      <div class="header-title">☀️ 天气</div>
-      <div class="header-title">刷新 ↻</div>
+      <div class="header-title">☀️ Weather</div>
+      <div class="header-title">Refresh ↻</div>
     </div>
     
     <input type="text" id="city" placeholder="Enter city name">
@@ -245,19 +245,19 @@
           
           <div class="weather-details">
             <div class="detail-item">
-              <div class="detail-label">体感温度</div>
+              <div class="detail-label">Feels Like</div>
               <div class="detail-value">${feelsLike}°</div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">湿度</div>
+              <div class="detail-label">Humidity</div>
               <div class="detail-value">${current.relative_humidity_2m}%</div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">气压</div>
+              <div class="detail-label">Pressure</div>
               <div class="detail-value">${Math.round(current.pressure_msl)} mb</div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">风速</div>
+              <div class="detail-label">Wind Speed</div>
               <div class="detail-value">${current.wind_speed_10m.toFixed(1)} m/s</div>
             </div>
           </div>
